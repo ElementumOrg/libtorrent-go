@@ -1,4 +1,4 @@
-FROM cross-compiler:linux-armv6
+FROM elementumorg/cross-compiler:linux-armv6
 
 RUN mkdir -p /build
 WORKDIR /build

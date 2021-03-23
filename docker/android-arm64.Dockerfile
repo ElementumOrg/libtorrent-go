@@ -1,4 +1,4 @@
-FROM cross-compiler:android-arm64
+FROM elementumorg/cross-compiler:android-arm64
 
 RUN mkdir -p /build
 WORKDIR /build
