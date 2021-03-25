@@ -11,7 +11,7 @@ tar -xzf swig-${SWIG_VERSION}.tar.gz
 rm swig-${SWIG_VERSION}.tar.gz
 cd swig-${SWIG_VERSION}/
 run ./autogen.sh
-run ./configure
+run ./configure --prefix=/libs/swig/installed
 run make -j $(cat /proc/cpuinfo | grep processor | wc -l)
 run make install
 rm -rf `pwd`
