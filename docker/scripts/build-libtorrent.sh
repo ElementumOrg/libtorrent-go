@@ -28,6 +28,7 @@ run ./configure \
     --disable-deprecated-functions \
     --host=${CROSS_TRIPLE} \
     --prefix=${CROSS_ROOT} \
+    --with-openssl=${CROSS_ROOT} \
     --with-boost=${CROSS_ROOT} --with-boost-libdir=${CROSS_ROOT}/lib ${LT_OPTS}
 run make -j $(cat /proc/cpuinfo | grep processor | wc -l) && make install
 rm -rf `pwd`

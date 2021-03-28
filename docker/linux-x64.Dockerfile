@@ -1,4 +1,4 @@
-FROM cross-compiler:linux-x64
+FROM elementumorg/cross-compiler:linux-x64
 
 RUN mkdir -p /build
 WORKDIR /build
