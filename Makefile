@@ -31,6 +31,7 @@ BOOST_SHA256 = 59c9b274bc451cf91a9ba1dd2c7fdcaf5d60b1b3aa83f2c9fa143417cc660722
 OPENSSL_VERSION = 1.1.1f
 OPENSSL_SHA256 = 186c6bfe6ecfba7a5b48c47f8a1673d0f3b0e5ba2e25602dd23b629975da3f35
 
+SWIG_TAG = 4.4.1
 SWIG_VERSION = c7b01379fa00ff152bc22d4dd0e0d5bb862282d9 # Release 4.4.1
 SWIG_SHA256 = 779e701732eed135cf326066f508e106c28023e2ea0276c627483b377ab393f6
 
@@ -42,6 +43,25 @@ GOLANG_BOOTSTRAP_VERSION = 1.24.6
 GOLANG_BOOTSTRAP_SHA256 = bbca37cc395c974ffa4893ee35819ad23ebb27426df87af92e93a9ec66ef8712
 
 LIBTORRENT_VERSION = 760f94862ef6b76a13bba0a68d55ca6507aef7c2 # RC_1_1
+
+# Component version variables written as export lines into the local-env .env file
+ENV_VARS = \
+	BOOST_VERSION \
+	BOOST_VERSION_FILE \
+	BOOST_SHA256 \
+	OPENSSL_VERSION \
+	OPENSSL_SHA256 \
+	SWIG_TAG \
+	SWIG_VERSION \
+	SWIG_SHA256 \
+	GOLANG_VERSION \
+	GOLANG_SHA256 \
+	GOLANG_BOOTSTRAP_VERSION \
+	GOLANG_BOOTSTRAP_SHA256 \
+	LIBTORRENT_VERSION
+
+# Build export lines, stripping value whitespace and removing foreach's inter-line spaces
+ENV_EXPORTS = $(subst \n ,\n,$(foreach v,$(ENV_VARS),export $(v)="$(strip $($(v)))"\n))
 
 include platform_host.mk
 
@@ -175,6 +195,8 @@ local-env:
 	$(MAKE) env PLATFORM=$(LOCALPLATFORM)
 	$(DOCKER) run --rm -v $(LOCALDEST):/local-env $(PROJECT)/$(DOCKER_IMAGE):$(LOCALPLATFORM) /bin/bash -c "rm -rf /local-env/*; /bin/cp -rf /usr/$(CROSS_TRIPLE)/* /local-env/; chmod -R 777 /local-env/lib/pkgconfig"
 	sed -i 's|/usr/$(CROSS_TRIPLE)|$(LOCALDEST)|g' $(LOCALDEST)/lib/pkgconfig/*.pc
+	@printf '%b' '$(ENV_EXPORTS)' > $(LOCALDEST)/.env
+	@echo ">>> Wrote $(LOCALDEST)/.env with component versions (source it with: source $(LOCALDEST)/.env)"
 	echo ">>> Run 'make re' to compile libtorrent-go locally"
 
 env:
