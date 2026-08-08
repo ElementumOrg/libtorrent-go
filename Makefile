@@ -182,7 +182,7 @@ else
 	-w $(DOCKER_WORKDIR) \
 	-e GOCACHE=$(DOCKER_GOCACHE) \
 	-e GOPATH=$(DOCKER_GOPATH) \
-	$(PROJECT)/$(DOCKER_IMAGE):$(PLATFORM) make re
+	$(PROJECT)/$(DOCKER_IMAGE):$@ make re
 endif
 
 debug:
