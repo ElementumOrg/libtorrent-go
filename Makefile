@@ -164,7 +164,7 @@ OUT_LIBRARY = $(OUT_PATH)/$(GO_PACKAGE).a
 
 USERGRP = "$(shell id -u):$(shell id -g)"
 
-.PHONY: $(PLATFORMS) local-env
+.PHONY: $(PLATFORMS) local-env build
 
 all:
 	for i in $(PLATFORMS); do \
