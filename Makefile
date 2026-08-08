@@ -182,11 +182,25 @@ else
 	-w $(DOCKER_WORKDIR) \
 	-e GOCACHE=$(DOCKER_GOCACHE) \
 	-e GOPATH=$(DOCKER_GOPATH) \
-	$(PROJECT)/$(DOCKER_IMAGE):$@ bash -c \
+	$(PROJECT)/$(DOCKER_IMAGE):$(PLATFORM) make re
+endif
+
+debug:
+ifeq ($(PLATFORM),)
+	$(MAKE) debug PLATFORM=linux-x64
+else
+	$(DOCKER) run --rm \
+	-u $(USERGRP) \
+	-v "$(GOPATH)":$(DOCKER_GOPATH) \
+	-v $(WORKDIR):$(DOCKER_WORKDIR) \
+	-w $(DOCKER_WORKDIR) \
+	-e GOCACHE=$(DOCKER_GOCACHE) \
+	-e GOPATH=$(DOCKER_GOPATH) \
+	$(PROJECT)/$(DOCKER_IMAGE):$(PLATFORM) bash -c \
 	'make re OPTS=-work; \
 	cp -rf /tmp/go-build* $(DOCKER_WORKDIR)/work'
 	cp $(WORK)/*/_libtorrent_swig.go $(LIBTORRENT_SWIG)
-endif
+endif	
 
 build:
 	SWIG_FLAGS='$(CC_DEFINES) $(LIBTORRENT_CFLAGS)' \
@@ -203,7 +217,12 @@ clean:
 re: clean build
 
 retest:
-	$(DOCKER) run --rm -v $(GOPATH):/go -v $(shell pwd):/go/src/$(GO_PACKAGE) -w /go/src/$(GO_PACKAGE) -e GOPATH=/go $(PROJECT)/$(DOCKER_IMAGE):linux-x64 make runtest;
+	$(DOCKER) run --rm \
+	-v $(GOPATH):/go \
+	-v $(shell pwd):/go/src/$(GO_PACKAGE) \
+	-w /go/src/$(GO_PACKAGE) \
+	-e GOPATH=/go \
+	$(PROJECT)/$(DOCKER_IMAGE):linux-x64 make runtest
 
 runtest:
 	CC=${CC} CXX=$(CXX) \
@@ -216,7 +235,9 @@ runtest:
 local-env:
 	mkdir -p $(LOCALDEST)
 	$(MAKE) env PLATFORM=$(LOCALPLATFORM)
-	$(DOCKER) run --rm -v $(LOCALDEST):/local-env $(PROJECT)/$(DOCKER_IMAGE):$(LOCALPLATFORM) /bin/bash -c "rm -rf /local-env/*; /bin/cp -rf /usr/$(CROSS_TRIPLE)/* /local-env/; chmod -R 777 /local-env/lib/pkgconfig"
+	$(DOCKER) run --rm \
+	-v $(LOCALDEST):/local-env \
+	$(PROJECT)/$(DOCKER_IMAGE):$(LOCALPLATFORM) /bin/bash -c "rm -rf /local-env/*; /bin/cp -rf /usr/$(CROSS_TRIPLE)/* /local-env/; chmod -R 777 /local-env/lib/pkgconfig"
 	sed -i 's|/usr/$(CROSS_TRIPLE)|$(LOCALDEST)|g' $(LOCALDEST)/lib/pkgconfig/*.pc
 	@printf '%b' '$(ENV_EXPORTS)' > $(LOCALDEST)/.env
 	@echo ">>> Wrote $(LOCALDEST)/.env with component versions (source it with: source $(LOCALDEST)/.env)"
