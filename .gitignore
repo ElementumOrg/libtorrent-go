@@ -24,6 +24,10 @@ _testmain.go
 
 *.exe
 
+# Debugging files
+work
+libtorrent_swig.go
+
 # Local build directory
 build/
 install/

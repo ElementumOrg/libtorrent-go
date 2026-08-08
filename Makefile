@@ -63,6 +63,10 @@ ENV_VARS = \
 # Build export lines, stripping value whitespace and removing foreach's inter-line spaces
 ENV_EXPORTS = $(subst \n ,\n,$(foreach v,$(ENV_VARS),export $(v)="$(strip $($(v)))"\n))
 
+ifeq ($(GOPATH),)
+	GOPATH = $(shell go env GOPATH)
+endif
+
 include platform_host.mk
 
 ifneq ($(CROSS_TRIPLE),)
@@ -147,9 +151,18 @@ else ifeq ($(TARGET_OS), linux)
 	endif
 endif
 
+DOCKER_GOPATH = "/go"
+DOCKER_WORKDIR = "$(DOCKER_GOPATH)/src/$(GO_PACKAGE)"
+DOCKER_GOCACHE = "/tmp/.cache"
 
-OUT_PATH = $(shell go env GOPATH)/pkg/$(GOOS)_$(GOARCH)$(PATH_SUFFIX)
+WORKDIR = "$(shell pwd)"
+LIBTORRENT_SWIG = "$(WORKDIR)/libtorrent_swig.go"
+WORK = $(WORKDIR)/work
+
+OUT_PATH = $(GOPATH)/pkg/$(GOOS)_$(GOARCH)$(PATH_SUFFIX)
 OUT_LIBRARY = $(OUT_PATH)/$(GO_PACKAGE).a
+
+USERGRP = "$(shell id -u):$(shell id -g)"
 
 .PHONY: $(PLATFORMS) local-env
 
@@ -162,7 +175,17 @@ $(PLATFORMS):
 ifeq ($@, all)
 	$(MAKE) all
 else
-	$(DOCKER) run --rm -v $(GOPATH):/go -v $(shell pwd):/go/src/$(GO_PACKAGE) -w /go/src/$(GO_PACKAGE) -e GOPATH=/go $(PROJECT)/$(DOCKER_IMAGE):$@ make re;
+	$(DOCKER) run --rm \
+	-u $(USERGRP) \
+	-v "$(GOPATH)":$(DOCKER_GOPATH) \
+	-v $(WORKDIR):$(DOCKER_WORKDIR) \
+	-w $(DOCKER_WORKDIR) \
+	-e GOCACHE=$(DOCKER_GOCACHE) \
+	-e GOPATH=$(DOCKER_GOPATH) \
+	$(PROJECT)/$(DOCKER_IMAGE):$@ bash -c \
+	'make re OPTS=-work; \
+	cp -rf /tmp/go-build* $(DOCKER_WORKDIR)/work'
+	cp $(WORK)/*/_libtorrent_swig.go $(LIBTORRENT_SWIG)
 endif
 
 build:
@@ -172,10 +195,10 @@ build:
 	CGO_ENABLED=1 \
 	GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) \
 	PATH=.:$$PATH \
-	go install -v -ldflags '$(GO_LDFLAGS)' $(PKGDIR)
+	go install $(OPTS) -v -ldflags '$(GO_LDFLAGS)' -x $(PKGDIR)
 
 clean:
-	rm -rf $(OUT_LIBRARY)
+	rm -rf $(OUT_LIBRARY) $(WORK) $(LIBTORRENT_SWIG)
 
 re: clean build
 
