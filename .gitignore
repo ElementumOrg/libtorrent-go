@@ -27,6 +27,7 @@ _testmain.go
 # Debugging files
 work
 libtorrent_swig.go
+libtorrent_wrap.cxx
 
 # Local build directory
 build/
