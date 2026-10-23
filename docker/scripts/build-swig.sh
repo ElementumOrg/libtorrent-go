@@ -7,6 +7,7 @@ source "${scripts_path}/common.sh"
 if [ ! -f "swig-${SWIG_VERSION}.tar.gz" ]; then
   wget -q https://github.com/swig/swig/archive/${SWIG_VERSION}.tar.gz -O swig-${SWIG_VERSION}.tar.gz
 fi
+echo "$SWIG_SHA256  swig-${SWIG_VERSION}.tar.gz" | sha256sum -c -
 tar -xzf swig-${SWIG_VERSION}.tar.gz
 rm swig-${SWIG_VERSION}.tar.gz
 cd swig-${SWIG_VERSION}/
