@@ -44,8 +44,16 @@ func main() {
 	settings := lt.NewSettingsPack()
 	defer lt.DeleteSettingsPack(settings)
 
-	session := lt.NewSession(settings, int(lt.SessionHandleAddDefaultPlugins))
+	session, err := lt.NewSession(settings, int(lt.WrappedSessionHandleAddDefaultPlugins))
+	if err != nil {
+		panic(fmt.Sprintf("Can't create session: %v", err))
+	}
 	defer lt.DeleteSession(session)
+
+	sessionHandle, err := session.GetHandle()
+	if err != nil {
+		panic(fmt.Sprintf("Can't get session handle: %v", err))
+	}
 
 	settings.SetInt("request_timeout", 2)
 	settings.SetInt("peer_connect_timeout", 2)
@@ -78,7 +86,7 @@ func main() {
 	settings.SetInt("mixed_mode_algorithm", int(lt.SettingsPackPreferTcp))
 	settings.SetInt("network_threads", 0)
 
-	session.GetHandle().ApplySettings(settings)
+	sessionHandle.ApplySettings(settings)
 
 	torrentParams := lt.NewAddTorrentParams()
 	defer lt.DeleteAddTorrentParams(torrentParams)
@@ -93,11 +101,12 @@ func main() {
 	torrentParams.SetTorrentInfo(info)
 	torrentParams.SetSavePath(dir)
 
-	torrentHandle := session.GetHandle().AddTorrent(torrentParams)
-	defer lt.DeleteTorrentHandle(torrentHandle)
-	if torrentHandle == nil {
-		log.Errorf("Error adding torrent file for %s", torrentFile)
+	torrentHandle, err := sessionHandle.AddTorrent(torrentParams)
+	if err != nil {
+		log.Errorf("Error adding torrent file for %s: %v", torrentFile, err)
+		return
 	}
+	defer lt.DeleteWrappedTorrentHandle(torrentHandle)
 
 	// numFiles := info.NumFiles()
 	// filesPriorities := libtorrent.NewStdVectorInt()
@@ -131,8 +140,8 @@ func main() {
 		case <-rotateTicker.C:
 
 			log.Infof("Getting session")
-			log.Infof("Session: %#v", session.GetHandle())
-			torrentsVector := session.GetHandle().GetTorrents()
+			log.Infof("Session: %#v", sessionHandle)
+			torrentsVector := sessionHandle.GetTorrents()
 			// defer libtorrent.DeleteStdVectorTorrentHandle(torrentsVector)
 			torrentsVectorSize := int(torrentsVector.Size())
 
@@ -143,7 +152,7 @@ func main() {
 					continue
 				}
 
-				torrentStatus := torrentHandle.Status(uint(lt.TorrentHandleQueryName))
+				torrentStatus := torrentHandle.Status(uint(lt.WrappedTorrentHandleQueryName))
 				status := StatusStrings[int(torrentStatus.GetState())]
 
 				torrentName := torrentStatus.GetName()

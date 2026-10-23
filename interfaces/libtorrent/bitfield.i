@@ -7,6 +7,7 @@
         return (void*)self->data();
     }
 }
+
 %ignore libtorrent::bitfield::bytes;
 
 %include <libtorrent/bitfield.hpp>

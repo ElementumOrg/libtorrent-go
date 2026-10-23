@@ -1,6 +1,5 @@
 %{
 #include <libtorrent/alert.hpp>
-#include <libtorrent/alert_manager.hpp>
 %}
 
 %ignore libtorrent::log_alert;
@@ -10,9 +9,10 @@
 %ignore libtorrent::stats_alert;
 %ignore libtorrent::picker_log_alert;
 
-%include <libtorrent/alert.hpp>
-%include <libtorrent/alert_manager.hpp>
-
 %{
     using libtorrent::time_point;
 %}
+
+%include <libtorrent/alert.hpp>
+
+%template(stdVectorAlerts) std::vector<libtorrent::alert*>;
