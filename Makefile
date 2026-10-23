@@ -18,8 +18,9 @@ PLATFORMS = \
 	linux-x64 \
 	linux-x86 \
 	windows-x64 \
-	windows-x86 \
-	darwin-x64
+	windows-x86
+# TODO: Golang >= 1.26 needs MacOS 13 
+# 	darwin-x64
 
 LOCALPLATFORM=linux-x64
 LOCALDEST=$(shell pwd)/local-env/

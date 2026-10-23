@@ -69,6 +69,7 @@ namespace libtorrent
 %ignore libtorrent::parse_int;
 %ignore libtorrent::blockinfo::setpeer;
 %ignore libtorrent::ipv6_nodeprecate_;
+%ignore libtorrent::noipv6_nodeprecate_;
 
 // Windows...
 %ignore libtorrent::file_status::block_special;
@@ -78,8 +79,6 @@ namespace libtorrent
 %include <boost/preprocessor/cat.hpp>
 %include <boost/version.hpp>
 %include <boost/config/detail/suffix.hpp>
-%include <boost/shared_ptr.hpp>
-%include <boost/make_shared.hpp>
 %include <boost/system/config.hpp>
 
 %include <boost/asio/detail/config.hpp>
@@ -90,14 +89,12 @@ namespace libtorrent
 
 %include "interfaces/boost_array.i"
 %include "interfaces/exceptions.i"
-%include "interfaces/go_types.i"
 
 // Libtorrent headers
 %include <libtorrent/config.hpp>
 %include <libtorrent/export.hpp>
 %include <libtorrent/version.hpp>
 %include <libtorrent/build_config.hpp>
-%include <libtorrent/link.hpp>
 
 // Libtorrent includes
 %include "interfaces/libtorrent/operations.i"
