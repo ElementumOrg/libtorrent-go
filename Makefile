@@ -31,12 +31,12 @@ BOOST_SHA256 = 59c9b274bc451cf91a9ba1dd2c7fdcaf5d60b1b3aa83f2c9fa143417cc660722
 OPENSSL_VERSION = 1.1.1f
 OPENSSL_SHA256 = 186c6bfe6ecfba7a5b48c47f8a1673d0f3b0e5ba2e25602dd23b629975da3f35
 
-SWIG_TAG = 4.4.1
-SWIG_VERSION = c7b01379fa00ff152bc22d4dd0e0d5bb862282d9 # Release 4.4.1
-SWIG_SHA256 = 779e701732eed135cf326066f508e106c28023e2ea0276c627483b377ab393f6
+SWIG_TAG = 4.6.0
+SWIG_VERSION = 1af9fdd94243b546e81330389062559cb1b69f1a # Pre-Release 4.6.0
+SWIG_SHA256 = 10cef498f236eec0d1752e7a69dadc90c46437cec1e54b4c198caaf1599bcea3
 
-GOLANG_VERSION = 1.26.5
-GOLANG_SHA256 = 495be4bc87176ac567392e5b4116abd98466d33d7b49d41e764ccc6976b2dc42
+GOLANG_VERSION = 1.27.3
+GOLANG_SHA256 = 6e7749035cf360f06b2575d162ea79df9fda8ef671889e5c375f8e50777f26bb
 
 # linux-amd64 version, used for building Go from source
 GOLANG_BOOTSTRAP_VERSION = 1.24.6
@@ -156,7 +156,9 @@ DOCKER_WORKDIR = "$(DOCKER_GOPATH)/src/$(GO_PACKAGE)"
 DOCKER_GOCACHE = "/tmp/.cache"
 
 WORKDIR = "$(shell pwd)"
-LIBTORRENT_SWIG = "$(WORKDIR)/libtorrent_swig.go"
+LIBTORRENT_GENERATED = "$(WORKDIR)/.debug"
+LIBTORRENT_SWIG = "$(WORKDIR)/.debug/libtorrent_swig.go"
+LIBTORRENT_CXX = "$(WORKDIR)/.debug/libtorrent_wrap.cxx"
 WORK = $(WORKDIR)/work
 
 OUT_PATH = $(GOPATH)/pkg/$(GOOS)_$(GOARCH)$(PATH_SUFFIX)
@@ -185,6 +187,21 @@ else
 	$(PROJECT)/$(DOCKER_IMAGE):$@ make re
 endif
 
+build-local:
+ifeq ($(PLATFORM),)
+	$(MAKE) build-local PLATFORM=linux-x64
+else
+	$(DOCKER) run --rm \
+	-u $(USERGRP) \
+	-v "$(GOPATH)":$(DOCKER_GOPATH) \
+	-v $(WORKDIR):$(DOCKER_WORKDIR) \
+	-w $(DOCKER_WORKDIR) \
+	-e GOCACHE=$(DOCKER_GOCACHE) \
+	-e GOPATH=$(DOCKER_GOPATH) \
+	$(PROJECT)/$(DOCKER_IMAGE):$(PLATFORM) bash -c \
+	'make re OPTS=-work'
+endif
+
 debug:
 ifeq ($(PLATFORM),)
 	$(MAKE) debug PLATFORM=linux-x64
@@ -198,9 +215,11 @@ else
 	-e GOPATH=$(DOCKER_GOPATH) \
 	$(PROJECT)/$(DOCKER_IMAGE):$(PLATFORM) bash -c \
 	'make re OPTS=-work; \
-	cp -rf /tmp/go-build* $(DOCKER_WORKDIR)/work'
+	cp -rf /tmp/go-build* $(DOCKER_WORKDIR)/work';
+	mkdir -p $(LIBTORRENT_GENERATED);
+	cp $(WORK)/*/libtorrent_wrap.cxx $(LIBTORRENT_CXX);
 	cp $(WORK)/*/_libtorrent_swig.go $(LIBTORRENT_SWIG)
-endif	
+endif
 
 build:
 	SWIG_FLAGS='$(CC_DEFINES) $(LIBTORRENT_CFLAGS)' \
