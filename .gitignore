@@ -33,3 +33,7 @@ libtorrent_wrap.cxx
 build/
 install/
 local-env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
