@@ -24,7 +24,7 @@ jobs:
           windows-x64, windows-x86 ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Build ${{ matrix.platform }} docker image
         run: make env PLATFORM=${{ matrix.platform }}
@@ -69,10 +69,10 @@ jobs:
     if: success() && github.event_name == 'create' && startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Get all artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
 
