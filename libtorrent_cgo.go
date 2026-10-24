@@ -3,7 +3,7 @@ package libtorrent
 // Add '-fsanitize=address' to CXXFLAGS and LDFLAGS
 
 // #cgo pkg-config: --static libtorrent-rasterbar openssl
-// #cgo darwin CXXFLAGS: -fvisibility=hidden
+// #cgo darwin CXXFLAGS: -fvisibility=hidden -Wno-enum-constexpr-conversion
 // #cgo darwin LDFLAGS: -lm -lc++
 // #cgo !android,linux CXXFLAGS: -std=c++11 -I/usr/include/libtorrent -Wno-deprecated-declarations -Wno-psabi
 // #cgo !android,linux LDFLAGS: -lm -lstdc++ -ldl -lrt

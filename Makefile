@@ -19,7 +19,8 @@ PLATFORMS = \
 	linux-x86 \
 	windows-x64 \
 	windows-x86 \
-	darwin-x64
+	darwin-x64 \
+	darwin-arm64
 
 LOCALPLATFORM=linux-x64
 LOCALDEST=$(shell pwd)/local-env/
@@ -28,8 +29,8 @@ BOOST_VERSION = 1.72.0
 BOOST_VERSION_FILE = $(shell echo $(BOOST_VERSION) | sed s/\\./_/g)
 BOOST_SHA256 = 59c9b274bc451cf91a9ba1dd2c7fdcaf5d60b1b3aa83f2c9fa143417cc660722
 
-OPENSSL_VERSION = 1.1.1f
-OPENSSL_SHA256 = 186c6bfe6ecfba7a5b48c47f8a1673d0f3b0e5ba2e25602dd23b629975da3f35
+OPENSSL_VERSION = 1.1.1w
+OPENSSL_SHA256 = cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8
 
 SWIG_TAG = 4.6.0
 SWIG_VERSION = 1af9fdd94243b546e81330389062559cb1b69f1a # Pre-Release 4.6.0
