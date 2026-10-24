@@ -44,6 +44,9 @@ ENV GOLANG_CXX="${CROSS_TRIPLE}-c++"
 ENV GOLANG_OS="linux"
 ENV GOLANG_ARCH="arm"
 ENV GOLANG_ARM="6"
+# shortcut: the old Raspberry Pi toolchain lacks kernel headers for a test-only cgo package
+# (crypto/internal/sysrand/internal/seccomp), so the target std pre-build fails; drop this with that toolchain
+ENV GOLANG_IGNORE_TARGET_STD_ERRORS="1"
 RUN ./build-golang.sh
 ENV PATH="${PATH}:/usr/local/go/bin"
 

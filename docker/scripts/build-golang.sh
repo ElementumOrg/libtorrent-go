@@ -29,8 +29,9 @@ CC_FOR_TARGET=${GOLANG_CC} \
   GOARCH=${GOLANG_ARCH} \
   GOARM=${GOLANG_ARM} \
   CGO_ENABLED=1 \
-  ./make.bash
-${CROSS_ROOT}/go/bin/go install std cmd
+  ./make.bash || [ -n "${GOLANG_IGNORE_TARGET_STD_ERRORS}" ]
+# The toolchain must work even when a target std error was tolerated above
+${CROSS_ROOT}/go/bin/go version
 rm -rf ${CROSS_ROOT}/bootstrap ${CROSS_ROOT}/go/pkg/bootstrap
 # Builds use their own GOCACHE, this one only bloats the image
 ${CROSS_ROOT}/go/bin/go clean -cache

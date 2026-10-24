@@ -18,9 +18,10 @@ sed -i 's/$PKG_CONFIG openssl --libs-only-/$PKG_CONFIG openssl --static --libs-o
 if [ -v LT_OSXCROSS ]; then
   export OSXCROSS_PKG_CONFIG_PATH=${CROSS_ROOT}/lib/pkgconfig/
 fi
+LT_CFLAGS="${CFLAGS} -O2 ${LT_FLAGS}"
 CC=${LT_CC} CXX=${LT_CXX} \
-CFLAGS="${CFLAGS} -O2 ${LT_FLAGS}" \
-CXXFLAGS="${CXXFLAGS} ${LT_CXXFLAGS} ${CFLAGS}" \
+CFLAGS="${LT_CFLAGS}" \
+CXXFLAGS="${CXXFLAGS} ${LT_CXXFLAGS} ${LT_CFLAGS}" \
 LIBS=${LT_LIBS} \
 run ./configure \
     --enable-static \
