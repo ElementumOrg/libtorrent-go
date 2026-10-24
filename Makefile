@@ -167,12 +167,14 @@ OUT_LIBRARY = $(OUT_PATH)/$(GO_PACKAGE).a
 
 USERGRP = "$(shell id -u):$(shell id -g)"
 
-.PHONY: $(PLATFORMS) local-env build
+# Run platform builds in parallel (`make JOBS=1 ...` for one at a time). -j is passed to a sub-make
+# rather than set globally, because this Makefile also runs inside the build containers.
+JOBS ?= 4
+
+.PHONY: $(PLATFORMS) local-env build all envs
 
 all:
-	for i in $(PLATFORMS); do \
-		$(MAKE) $$i; \
-	done
+	$(MAKE) -j$(JOBS) --output-sync=target $(PLATFORMS)
 
 $(PLATFORMS):
 ifeq ($@, all)
@@ -281,9 +283,10 @@ env:
 		-f docker/$(PLATFORM).Dockerfile docker
 
 envs:
-	for i in $(PLATFORMS); do \
-		$(MAKE) env PLATFORM=$$i; \
-	done
+	$(MAKE) -j$(JOBS) --output-sync=target $(addprefix env-,$(PLATFORMS))
+
+env-%:
+	$(MAKE) env PLATFORM=$*
 
 pull:
 	docker pull $(PROJECT)/libtorrent-go:$(PLATFORM)
