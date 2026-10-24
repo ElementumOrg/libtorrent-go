@@ -52,4 +52,6 @@ ENV LT_CC ${CROSS_TRIPLE}-gcc
 ENV LT_CXX ${CROSS_TRIPLE}-g++
 ENV LT_PTHREADS TRUE
 ENV LT_CXXFLAGS -std=c++11
+# aarch64 cannot link non-PIC static libs into elementum.so
+ENV LT_FLAGS -fPIC
 RUN ./build-libtorrent.sh

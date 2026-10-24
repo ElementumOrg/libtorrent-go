@@ -66,5 +66,5 @@ COPY scripts/build-libtorrent.sh /build/
 ENV LT_CC ${CROSS_TRIPLE}-cc
 ENV LT_CXX ${CROSS_TRIPLE}-c++
 ENV LT_OSXCROSS TRUE
-ENV LT_CXXFLAGS -Wno-c++11-extensions -Wno-c++11-long-long
+ENV LT_CXXFLAGS -std=c++11 -Wno-c++11-extensions -Wno-c++11-long-long
 RUN ./build-libtorrent.sh

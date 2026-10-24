@@ -4,7 +4,7 @@ package libtorrent
 
 // #cgo pkg-config: --static libtorrent-rasterbar openssl
 // #cgo darwin CXXFLAGS: -fvisibility=hidden
-// #cgo darwin LDFLAGS: -lm -lstdc++
+// #cgo darwin LDFLAGS: -lm -lc++
 // #cgo !android,linux CXXFLAGS: -std=c++11 -I/usr/include/libtorrent -Wno-deprecated-declarations -Wno-psabi
 // #cgo !android,linux LDFLAGS: -lm -lstdc++ -ldl -lrt
 // #cgo android CXXFLAGS: -Wno-macro-redefined -Wno-delete-non-virtual-dtor

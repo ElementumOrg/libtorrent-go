@@ -32,3 +32,5 @@ CC_FOR_TARGET=${GOLANG_CC} \
   ./make.bash
 ${CROSS_ROOT}/go/bin/go install std cmd
 rm -rf ${CROSS_ROOT}/bootstrap ${CROSS_ROOT}/go/pkg/bootstrap
+# Builds use their own GOCACHE, this one only bloats the image
+${CROSS_ROOT}/go/bin/go clean -cache
