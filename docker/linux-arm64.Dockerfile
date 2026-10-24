@@ -20,16 +20,16 @@ COPY scripts/common.sh /build/
 
 # Install Boost.System
 COPY scripts/build-boost.sh /build/
-ENV BOOST_CC gcc
-ENV BOOST_CXX c++
-ENV BOOST_OS linux
-ENV BOOST_TARGET_OS linux
-ENV BOOST_OPTS cxxflags=-fPIC cflags=-fPIC
+ENV BOOST_CC="gcc"
+ENV BOOST_CXX="c++"
+ENV BOOST_OS="linux"
+ENV BOOST_TARGET_OS="linux"
+ENV BOOST_OPTS="cxxflags=-fPIC cflags=-fPIC"
 RUN ./build-boost.sh
 
 # Install OpenSSL
 COPY scripts/build-openssl.sh /build/
-ENV OPENSSL_OPTS linux-aarch64
+ENV OPENSSL_OPTS="linux-aarch64"
 RUN ./build-openssl.sh
 
 # Install SWIG
@@ -38,20 +38,20 @@ RUN ./build-swig.sh
 
 # Install Golang
 COPY scripts/build-golang.sh /build/
-ENV GOROOT_BOOTSTRAP /usr/go
-ENV GOLANG_CC ${CROSS_TRIPLE}-cc
-ENV GOLANG_CXX ${CROSS_TRIPLE}-c++
-ENV GOLANG_OS linux
-ENV GOLANG_ARCH arm64
+ENV GOROOT_BOOTSTRAP="/usr/go"
+ENV GOLANG_CC="${CROSS_TRIPLE}-cc"
+ENV GOLANG_CXX="${CROSS_TRIPLE}-c++"
+ENV GOLANG_OS="linux"
+ENV GOLANG_ARCH="arm64"
 RUN ./build-golang.sh
-ENV PATH ${PATH}:/usr/local/go/bin
+ENV PATH="${PATH}:/usr/local/go/bin"
 
 # Install libtorrent
 COPY scripts/build-libtorrent.sh /build/
-ENV LT_CC ${CROSS_TRIPLE}-gcc
-ENV LT_CXX ${CROSS_TRIPLE}-g++
-ENV LT_PTHREADS TRUE
-ENV LT_CXXFLAGS -std=c++11
+ENV LT_CC="${CROSS_TRIPLE}-gcc"
+ENV LT_CXX="${CROSS_TRIPLE}-g++"
+ENV LT_PTHREADS="TRUE"
+ENV LT_CXXFLAGS="-std=c++11"
 # aarch64 cannot link non-PIC static libs into elementum.so
-ENV LT_FLAGS -fPIC
+ENV LT_FLAGS="-fPIC"
 RUN ./build-libtorrent.sh

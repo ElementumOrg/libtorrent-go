@@ -30,11 +30,11 @@ RUN mv /usr/bin/ar /usr/bin/ar.orig && \
 
 # Install Boost.System
 COPY scripts/build-boost.sh /build/
-ENV BOOST_CC clang
-ENV BOOST_CXX c++
-ENV BOOST_OS darwin
-ENV BOOST_TARGET_OS darwin
-ENV BOOST_BOOTSTRAP --with-toolset=clang
+ENV BOOST_CC="clang"
+ENV BOOST_CXX="c++"
+ENV BOOST_OS="darwin"
+ENV BOOST_TARGET_OS="darwin"
+ENV BOOST_BOOTSTRAP="--with-toolset=clang"
 RUN ./build-boost.sh
 
 # Move back ar, strip and ranlib...
@@ -44,7 +44,7 @@ RUN mv /usr/bin/ar.orig /usr/bin/ar && \
 
 # Install OpenSSL
 COPY scripts/build-openssl.sh /build/
-ENV OPENSSL_OPTS darwin64-x86_64-cc
+ENV OPENSSL_OPTS="darwin64-x86_64-cc"
 RUN ./build-openssl.sh
 
 # Install SWIG
@@ -53,18 +53,18 @@ RUN ./build-swig.sh
 
 # Install Golang
 COPY scripts/build-golang.sh /build/
-ENV GOROOT_BOOTSTRAP /usr/go
-ENV GOLANG_CC ${CROSS_TRIPLE}-cc
-ENV GOLANG_CXX ${CROSS_TRIPLE}-c++
-ENV GOLANG_OS darwin
-ENV GOLANG_ARCH amd64
+ENV GOROOT_BOOTSTRAP="/usr/go"
+ENV GOLANG_CC="${CROSS_TRIPLE}-cc"
+ENV GOLANG_CXX="${CROSS_TRIPLE}-c++"
+ENV GOLANG_OS="darwin"
+ENV GOLANG_ARCH="amd64"
 RUN ./build-golang.sh
-ENV PATH ${PATH}:/usr/local/go/bin
+ENV PATH="${PATH}:/usr/local/go/bin"
 
 # Install libtorrent
 COPY scripts/build-libtorrent.sh /build/
-ENV LT_CC ${CROSS_TRIPLE}-cc
-ENV LT_CXX ${CROSS_TRIPLE}-c++
-ENV LT_OSXCROSS TRUE
-ENV LT_CXXFLAGS -std=c++11 -Wno-c++11-extensions -Wno-c++11-long-long
+ENV LT_CC="${CROSS_TRIPLE}-cc"
+ENV LT_CXX="${CROSS_TRIPLE}-c++"
+ENV LT_OSXCROSS="TRUE"
+ENV LT_CXXFLAGS="-std=c++11 -Wno-c++11-extensions -Wno-c++11-long-long"
 RUN ./build-libtorrent.sh
